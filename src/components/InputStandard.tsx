@@ -8,7 +8,6 @@ import React, {
   useMemo,
 } from 'react';
 import {
-  Platform,
   StyleSheet,
   TextInput,
   TextInputProps,
@@ -295,13 +294,13 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
           ),
         },
         {
-          scale: interpolate(placeholderMap.value, [0, 1], [1, 0.7]),
+          scale: interpolate(placeholderMap.value, [0, 1], [1, 0.88]),
         },
         {
           translateX: interpolate(
             placeholderMap.value,
             [0, 1],
-            [0, -placeholderSize.value * 0.2]
+            [0, -placeholderSize.value * 0.09]
           ),
         },
       ],
@@ -350,8 +349,7 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
         backgroundColor,
       },
       inputContainer: {
-        paddingVertical:
-          Platform.OS !== 'android' ? paddingVertical : undefined,
+        paddingVertical,
         paddingRight: paddingHorizontal,
         flex: 1,
         flexDirection: 'row',
@@ -363,6 +361,7 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
         fontSize,
         fontFamily,
         color: fontColor,
+        padding: 0
       },
       placeholder: {
         position: 'absolute',
