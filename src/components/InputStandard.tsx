@@ -227,14 +227,14 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
       [error]
     );
 
-    const handleFocus = (e) => {
+    const handleFocus = (e: any) => {
       placeholderMap.value = withTiming(1); // focused
       if (!errorState()) colorMap.value = withTiming(1); // active
       focus();
       props?.onFocus && props?.onFocus(e);
     };
 
-    const handleBlur = (e) => {
+    const handleBlur = (e: any) => {
       if (!value) placeholderMap.value = withTiming(0); // blur
       if (!errorState()) colorMap.value = withTiming(0); // inactive
       blur();
@@ -325,8 +325,8 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
     }));
 
     useImperativeHandle(ref, () => ({
-      focus: handleFocus,
-      blur: handleBlur,
+      focus:(e: any) => handleFocus(e),
+      blur: (e: any) => handleBlur(e),
       isFocused: isFocused(),
       clear: clear,
     }));
