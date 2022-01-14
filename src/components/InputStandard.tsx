@@ -17,11 +17,11 @@ export interface InputStandardMethods {
   /**
    * Requests focus for the given input or view. The exact behavior triggered will depend on the platform and type of view.
    */
-  focus: () => void;
+  focus: (e: any) => void;
   /**
    * Removes focus from an input or view. This is the opposite of focus()
    */
-  blur: () => void;
+  blur: (e: any) => void;
   /**
    * Returns current focus of input.
    */
@@ -325,8 +325,8 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
     }));
 
     useImperativeHandle(ref, () => ({
-      focus:(e: any) => handleFocus(e),
-      blur: (e: any) => handleBlur(e),
+      focus: handleFocus,
+      blur:  handleBlur,
       isFocused: isFocused(),
       clear: clear,
     }));
