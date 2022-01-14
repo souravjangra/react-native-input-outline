@@ -1,29 +1,16 @@
 import React, {
-  useRef,
-  forwardRef,
-  useImperativeHandle,
-  useEffect,
-  useState,
-  useCallback,
-  useMemo,
+  forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState
 } from 'react';
 import {
-  StyleSheet,
-  TextInput,
+  // @ts-ignore
+  LogBox, StyleSheet, Text, TextInput,
   TextInputProps,
   TouchableWithoutFeedback,
-  View,
-  Text,
-  // @ts-ignore
-  LogBox,
+  View
 } from 'react-native';
 import Animated, {
-  useSharedValue,
-  withTiming,
-  useAnimatedStyle,
-  interpolate,
-  Extrapolate,
-  interpolateColor,
+  Extrapolate, interpolate, interpolateColor, useAnimatedStyle, useSharedValue,
+  withTiming
 } from 'react-native-reanimated';
 
 export interface InputStandardMethods {
@@ -240,16 +227,19 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
       [error]
     );
 
-    const handleFocus = () => {
+    const handleFocus = (e) => {
       placeholderMap.value = withTiming(1); // focused
       if (!errorState()) colorMap.value = withTiming(1); // active
       focus();
+      props?.onFocus && props?.onFocus(e);
     };
 
-    const handleBlur = () => {
+    const handleBlur = (e) => {
       if (!value) placeholderMap.value = withTiming(0); // blur
       if (!errorState()) colorMap.value = withTiming(0); // inactive
       blur();
+      props?.onBlur && props?.onBlur(e);
+      setValue(value.trim());
     };
 
     const handleChangeText = (text: string) => {
@@ -426,7 +416,7 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
               onBlur={handleBlur}
               onChangeText={handleChangeText}
               maxLength={characterCount ? characterCount : undefined}
-              selectionColor={errorState() ? errorColor : activeColor}
+              selectionColor={errorState() ? errorColor : props?.selectionColor ?? activeColor}
               placeholder=""
               value={value}
             />
