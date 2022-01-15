@@ -424,7 +424,7 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
     });
 
     const placeholderStyle = useMemo(() => {
-      return [styles.placeholder, {left: value.length > 0 || isFocused() ? 0 : leadingIcon && leadingStyles ? (+leadingStyles?.width + 7) ?? 0 : 0, top: '40%'}, animatedPlaceholderStyles];
+      return [styles.placeholder, {left: value.length > 0 || isFocused() ? 0 : leadingIcon && leadingStyles ? (+(leadingStyles?.width ?? 0) + 7) ?? 0 : 0, top: '40%'}, animatedPlaceholderStyles];
     }, [styles.placeholder, animatedPlaceholderStyles, value]);
 
     return (
