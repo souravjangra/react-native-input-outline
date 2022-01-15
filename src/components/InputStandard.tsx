@@ -6,7 +6,8 @@ import {
   LogBox, StyleSheet, Text, TextInput,
   TextInputProps,
   TouchableWithoutFeedback,
-  View
+  View,
+  ViewStyle
 } from 'react-native';
 import Animated, {
   Extrapolate, interpolate, interpolateColor, useAnimatedStyle, useSharedValue,
@@ -100,6 +101,18 @@ export interface InputStandardProps extends TextInputProps {
    * @type string
    */
   errorColor?: string;
+  /**
+   * Leading styles for the leading icon.
+   * @default undefined
+   * @type ViewStyle
+   */
+   leadingStyles?: ViewStyle;
+  /**
+   * Leading Icon for the TextInput.
+   * @default undefined
+   * @type React.FC
+   */
+   leadingIcon?: React.FC;
   /**
    * Trailing Icon for the TextInput.
    * @default undefined
@@ -197,6 +210,8 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
 
       // features
       placeholder = 'Placeholder',
+      leadingStyles,
+      leadingIcon,
       trailingIcon,
 
       // others
@@ -254,6 +269,11 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
       },
       [placeholderSize]
     );
+
+    const renderLeadingIcon = useCallback(() => {
+      if (leadingIcon) return leadingIcon({});
+      return null;
+    }, [leadingIcon]);
 
     const renderTrailingIcon = useCallback(() => {
       if (trailingIcon) return trailingIcon({});
@@ -376,8 +396,12 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
         bottom: -errorFontSize - 7,
         left: paddingHorizontal,
       },
+      leadingIcon: {
+        left: paddingHorizontal,
+        alignSelf: 'center',
+      },
       trailingIcon: {
-        position: 'absolute',
+        // position: 'absolute',
         right: paddingHorizontal,
         alignSelf: 'center',
       },
@@ -400,11 +424,14 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
     });
 
     const placeholderStyle = useMemo(() => {
-      return [styles.placeholder, animatedPlaceholderStyles];
+      return [styles.placeholder, {left: value.length > 0 || isFocused() ? (leadingStyles?.width ?? 0 + 7) : 0}, animatedPlaceholderStyles];
     }, [styles.placeholder, animatedPlaceholderStyles]);
 
     return (
       <Animated.View style={[styles.container, animatedContainerStyle, style]}>
+        {leadingIcon && (
+          <View style={styles.leadingIcon}>{renderLeadingIcon()}</View>
+        )}
         <TouchableWithoutFeedback onPress={handleFocus}>
           <View style={styles.inputContainer}>
             <TextInput
