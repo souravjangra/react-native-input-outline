@@ -424,8 +424,8 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
     });
 
     const placeholderStyle = useMemo(() => {
-      return [styles.placeholder, {left: value.length > 0 || isFocused() ? (leadingStyles?.width ?? 0 + 7) : 0}, animatedPlaceholderStyles];
-    }, [styles.placeholder, animatedPlaceholderStyles]);
+      return [styles.placeholder, {left: value.length > 0 || isFocused() ? 0 : leadingStyles ? (+leadingStyles?.width + 7) ?? 0 : 0}, animatedPlaceholderStyles];
+    }, [styles.placeholder, animatedPlaceholderStyles, value]);
 
     return (
       <Animated.View style={[styles.container, animatedContainerStyle, style]}>
@@ -437,12 +437,12 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
             <TextInput
               {...inputProps}
               ref={inputRef}
-              style={styles.input}
+              style={[styles.input, {left: leadingStyles ? 12 : 0, paddingTop: 10}]}
               pointerEvents={isFocused() ? 'auto' : 'none'}
               onFocus={handleFocus}
               onBlur={handleBlur}
               onChangeText={handleChangeText}
-              maxLength={characterCount ? characterCount : undefined}
+              maxLength={characterCount ? characterCount : props?.maxLength}
               selectionColor={errorState() ? errorColor : props?.selectionColor ?? activeColor}
               placeholder=""
               value={value}
