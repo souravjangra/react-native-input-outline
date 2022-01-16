@@ -254,7 +254,7 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
       if (!errorState()) colorMap.value = withTiming(0); // inactive
       blur();
       props?.onBlur && props?.onBlur(e);
-      setValue(value.trim());
+      handleChangeText(value.trim());
     };
 
     const handleChangeText = (text: string) => {
@@ -424,7 +424,7 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
     });
 
     const placeholderStyle = useMemo(() => {
-      return [styles.placeholder, {left: value.length > 0 || isFocused() ? 1 : leadingStyles ? (+leadingStyles?.width + 7) ?? 1 : 1, top: '40%'}, animatedPlaceholderStyles];
+      return [styles.placeholder, {left: value.length > 0 || isFocused() ? 2 : leadingStyles ? (+leadingStyles?.width + 7) ?? 2 : 2, top: '40%'}, animatedPlaceholderStyles];
     }, [styles.placeholder, animatedPlaceholderStyles, value]);
 
     return (
