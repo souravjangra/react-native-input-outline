@@ -210,7 +210,7 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
 
       // features
       placeholder = 'Placeholder',
-      leadingStyles,
+      leadingStyles = {},
       leadingIcon,
       trailingIcon,
 
@@ -371,7 +371,7 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
         fontSize,
         fontFamily,
         color: fontColor,
-        padding: 0
+        padding: 0,
       },
       placeholder: {
         position: 'absolute',
