@@ -210,7 +210,7 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
 
       // features
       placeholder = 'Placeholder',
-      leadingStyles = {},
+      leadingStyles = null,
       leadingIcon,
       trailingIcon,
 
