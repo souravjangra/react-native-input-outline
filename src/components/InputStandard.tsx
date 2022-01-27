@@ -349,6 +349,7 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
       blur:  handleBlur,
       isFocused: isFocused(),
       clear: clear,
+      error: errorState()
     }));
 
     const styles = StyleSheet.create({
@@ -471,13 +472,13 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
             style={styles.counterText}
           >{`${value.length} / ${characterCount}`}</Text>
         )}
-        {errorState() ? (
+        {/* {errorState() ? (
           <Text style={[styles.errorText]}>{error}</Text>
         ) : (
           assistiveText && (
             <Text style={[styles.assistiveText]}>{assistiveText}</Text>
           )
-        )}
+        )} */}
       </Animated.View>
     );
   }
