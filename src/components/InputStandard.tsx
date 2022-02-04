@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import {
   // @ts-ignore
-  LogBox, StyleSheet, Text, TextInput,
+  LogBox, Platform, StyleSheet, Text, TextInput,
   TextInputProps,
   TouchableWithoutFeedback,
   View,
@@ -300,7 +300,7 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
           translateY: interpolate(
             placeholderMap.value,
             [0, 1],
-            [0, -(paddingVertical + fontSize * 0.7)]
+            [0, -(paddingVertical + fontSize * 0.9)]
           ),
         },
         {
@@ -399,7 +399,8 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
       },
       leadingIcon: {
         left: paddingHorizontal,
-        alignSelf: 'center',
+        alignSelf: 'flex-end',
+        marginBottom: Platform.OS ==='ios' ? 5 : 2
       },
       trailingIcon: {
         // position: 'absolute',
