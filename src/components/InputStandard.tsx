@@ -259,7 +259,7 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
 
     const handleChangeText = (text: string) => {
       onChangeText && onChangeText(text);
-      setValue(text);
+      // setValue(text);
     };
 
     const handlePlaceholderLayout = useCallback(
