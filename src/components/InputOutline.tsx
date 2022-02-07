@@ -27,7 +27,6 @@ import Animated, {
   Extrapolate,
   interpolateColor,
 } from 'react-native-reanimated';
-import { paddingBottom } from 'styled-system';
 
 export interface InputOutlineMethods {
   /**
@@ -449,7 +448,7 @@ const InputOutlineComponent = forwardRef<InputOutline, InputOutlineProps>(
     });
 
     const placeholderStyle = useMemo(() => {
-      return [styles.placeholder,{left:(leadingStyles?.width ?? 16 ) +8  }, animatedPlaceholderStyles];
+      return [styles.placeholder,{left:Number(leadingStyles?.width ?? 16 ) + 8  }, animatedPlaceholderStyles];
     }, [styles.placeholder, animatedPlaceholderStyles, value]);
 
     return (
@@ -479,7 +478,7 @@ const InputOutlineComponent = forwardRef<InputOutline, InputOutlineProps>(
         )}
      {showPlaceholder && <>
       <Animated.View
-          style={[styles.placeholderSpacer,{left:paddingHorizontal-3+((leadingStyles?.width ?? 0 )/2)}, animatedPlaceholderSpacerStyles]}
+          style={[styles.placeholderSpacer,{left:paddingHorizontal-3+(Number(leadingStyles?.width ?? 0 )/2)}, animatedPlaceholderSpacerStyles]}
         />
         <Animated.View
           style={placeholderStyle}
