@@ -409,7 +409,7 @@ const InputOutlineComponent = forwardRef<InputOutline, InputOutlineProps>(
         top: -1,
         left: paddingHorizontal-3 ,
         backgroundColor,
-        height: 1,
+        height: 2,
       },
       errorText: {
         position: 'absolute',
