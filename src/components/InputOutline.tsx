@@ -27,6 +27,7 @@ import Animated, {
   Extrapolate,
   interpolateColor,
 } from 'react-native-reanimated';
+import { paddingBottom } from 'styled-system';
 
 export interface InputOutlineMethods {
   /**
@@ -184,6 +185,8 @@ export interface InputOutlineProps extends TextInputProps {
    * @type string
    */
   errorFontFamily?: string;
+  showPlaceholder?: boolean;
+  borderColor?: string
 }
 
 type InputOutline = InputOutlineMethods;
@@ -232,6 +235,7 @@ const InputOutlineComponent = forwardRef<InputOutline, InputOutlineProps>(
       // others
       value: _providedValue = '',
       onChangeText,
+      showPlaceholder = true,
       ...inputProps
     } = props;
     // value of input
@@ -375,7 +379,7 @@ const InputOutlineComponent = forwardRef<InputOutline, InputOutlineProps>(
         flexDirection: 'row',
         backgroundColor,
         paddingVertical: 9,
-        paddingHorizontal: 5
+        paddingHorizontal: 5,
       },
       inputContainer: {
         flex: 1,
@@ -445,7 +449,7 @@ const InputOutlineComponent = forwardRef<InputOutline, InputOutlineProps>(
     });
 
     const placeholderStyle = useMemo(() => {
-      return [styles.placeholder,{left:(leadingStyles?.width ?? -8 )+8  }, animatedPlaceholderStyles];
+      return [styles.placeholder,{left:(leadingStyles?.width ?? 16 ) +8  }, animatedPlaceholderStyles];
     }, [styles.placeholder, animatedPlaceholderStyles, value]);
 
     return (
@@ -473,8 +477,9 @@ const InputOutlineComponent = forwardRef<InputOutline, InputOutlineProps>(
         {trailingIcon && (
           <View style={styles.trailingIcon}>{renderTrailingIcon()}</View>
         )}
-        <Animated.View
-          style={[styles.placeholderSpacer,{left:paddingHorizontal-3+((leadingStyles?.width ?? 0 )/2  )}, animatedPlaceholderSpacerStyles]}
+     {showPlaceholder && <>
+      <Animated.View
+          style={[styles.placeholderSpacer,{left:paddingHorizontal-3+((leadingStyles?.width ?? 0 )/2)}, animatedPlaceholderSpacerStyles]}
         />
         <Animated.View
           style={placeholderStyle}
@@ -487,6 +492,7 @@ const InputOutlineComponent = forwardRef<InputOutline, InputOutlineProps>(
             {placeholder}
           </Animated.Text>
         </Animated.View>
+      </>}
         {characterCount && (
           <Text
             style={styles.counterText}
