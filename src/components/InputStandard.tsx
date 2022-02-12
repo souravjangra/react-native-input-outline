@@ -2,17 +2,36 @@ import React, {
   forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState
 } from 'react';
 import {
+  Dimensions,
   // @ts-ignore
-  LogBox, Platform, StyleSheet, Text, TextInput,
+  LogBox, PixelRatio, Platform, ScaledSize, StyleSheet, Text, TextInput,
   TextInputProps,
   TouchableWithoutFeedback,
   View,
   ViewStyle
 } from 'react-native';
+import CurrencyInput from 'react-native-currency-input';
 import Animated, {
   Extrapolate, interpolate, interpolateColor, useAnimatedStyle, useSharedValue,
   withTiming
 } from 'react-native-reanimated';
+
+type Mode = 'width' | 'height';
+type Scale = number;
+
+export const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT }: ScaledSize =
+  Dimensions.get('window');
+
+const widthScale: Scale = SCREEN_WIDTH / 375;
+const heightScale: Scale = SCREEN_HEIGHT / 812;
+
+export const normalize = (size: number, based: Mode = 'width'): number => {
+  const newSize: number =
+    based === 'height' ? size * heightScale : size * widthScale;
+  return Math.round(PixelRatio.roundToNearestPixel(newSize));
+};
+
+const hp = (size: number | string): number => normalize(+size, 'height');
 
 export interface InputStandardMethods {
   /**
@@ -170,6 +189,7 @@ export interface InputStandardProps extends TextInputProps {
    * @type string
    */
   errorFontFamily?: string;
+  currency?: boolean;
 }
 
 type InputStandard = InputStandardMethods;
@@ -217,6 +237,8 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
       // others
       value: _providedValue = '',
       onChangeText,
+
+      currency = false,
       ...inputProps
     } = props;
     // value of input
@@ -254,7 +276,9 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
       if (!errorState()) colorMap.value = withTiming(0); // inactive
       blur();
       props?.onBlur && props?.onBlur(e);
-      handleChangeText(value.trim());
+      if(typeof value === "string") {
+        handleChangeText(value.trim());
+      }
     };
 
     const handleChangeText = (text: string) => {
@@ -282,7 +306,7 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
 
     // handle value update
     useEffect(() => {
-      if (_providedValue.length) placeholderMap.value = withTiming(1); // focused;
+      if (_providedValue?.length) placeholderMap.value = withTiming(1); // focused;
       setValue(_providedValue);
     }, [_providedValue, placeholderMap]);
     // error handling
@@ -426,7 +450,7 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
     });
 
     const placeholderStyle = useMemo(() => {
-      return [styles.placeholder, {left: value.length > 0 || isFocused() ? 2 : leadingStyles ? (+(leadingStyles?.width ?? 0) + 7) ?? 2 : 2, top: '40%'}, animatedPlaceholderStyles];
+      return [styles.placeholder, {left: value?.length > 0 || isFocused() ? 2 : leadingStyles ? (+(leadingStyles?.width ?? 0) + 7) ?? 2 : 2, top: '40%'}, animatedPlaceholderStyles];
     }, [styles.placeholder, animatedPlaceholderStyles, value]);
 
     return (
@@ -436,7 +460,7 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
         )}
         <TouchableWithoutFeedback onPress={handleFocus}>
           <View style={styles.inputContainer}>
-            <TextInput
+            {!currency ?  <TextInput
               {...inputProps}
               ref={inputRef}
               style={[styles.input, {left: leadingStyles ? 12 : 0, paddingTop: 10}]}
@@ -448,7 +472,32 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
               selectionColor={errorState() ? errorColor : props?.selectionColor ?? activeColor}
               placeholder=""
               value={value}
-            />
+            /> :
+            <CurrencyInput
+            ref={inputRef}
+            delimiter=","
+            separator="."
+            placeholder=""
+            value={value}
+            onChangeValue={handleChangeText}
+            minValue={0}
+            prefix="$ "
+            precision={2}
+            pointerEvents={isFocused() ? 'auto' : 'none'}
+            maxLength={characterCount ? characterCount : props?.maxLength}
+            selectionColor={errorState() ? errorColor : props?.selectionColor ?? activeColor}
+            placeholderTextColor="#00000080"
+            style={{
+              lineHeight: inputProps?.lineHeight ?? 24,
+              letterSpacing: inputProps?.letterSpacing ?? -0.3,
+              fontFamily: props.fontFamily,
+              fontSize: props.fontSize,
+              height: inputProps?.height ?? hp(49),
+              marginTop: 10
+            }}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+          />}
           </View>
         </TouchableWithoutFeedback>
         {trailingIcon && (
