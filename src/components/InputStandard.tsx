@@ -488,10 +488,13 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
             selectionColor={errorState() ? errorColor : props?.selectionColor ?? activeColor}
             placeholderTextColor="#00000080"
             style={{
+              // @ts-ignore
               lineHeight: inputProps?.lineHeight ?? 24,
+              // @ts-ignore
               letterSpacing: inputProps?.letterSpacing ?? -0.3,
               fontFamily: props.fontFamily,
               fontSize: props.fontSize,
+              // @ts-ignore
               height: inputProps?.height ?? hp(49),
               marginTop: 10
             }}
