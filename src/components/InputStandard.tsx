@@ -478,7 +478,8 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
             delimiter=","
             separator="."
             placeholder=""
-            value={value}
+            value={Number(value?.length > 0 ? value : 0)}
+            // @ts-ignore
             onChangeValue={handleChangeText}
             minValue={0}
             prefix="$ "
