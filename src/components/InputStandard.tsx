@@ -478,7 +478,8 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
             delimiter=","
             separator="."
             placeholder=""
-            value={Number(value?.length > 0 ? value : 0)}
+            // @ts-ignore
+            value={value}
             // @ts-ignore
             onChangeValue={handleChangeText}
             minValue={0}
@@ -511,7 +512,7 @@ const InputStandardComponent = forwardRef<InputStandard, InputStandardProps>(
           style={[styles.placeholderSpacer, animatedPlaceholderSpacerStyles]}
         />
         <Animated.View
-          style={placeholderStyle}
+          style={[placeholderStyle]}
           onLayout={handlePlaceholderLayout}
           pointerEvents="none"
         >
