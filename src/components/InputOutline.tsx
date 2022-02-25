@@ -17,6 +17,7 @@ import {
   Text,
   // @ts-ignore
   LogBox,
+  ViewStyle,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -31,11 +32,11 @@ export interface InputOutlineMethods {
   /**
    * Requests focus for the given input or view. The exact behavior triggered will depend on the platform and type of view.
    */
-  focus: () => void;
+  focus: (e: any) => void;
   /**
    * Removes focus from an input or view. This is the opposite of focus()
    */
-  blur: () => void;
+  blur: (e: any) => void;
   /**
    * Returns current focus of input.
    */
@@ -115,6 +116,18 @@ export interface InputOutlineProps extends TextInputProps {
    */
   errorColor?: string;
   /**
+   * Leading styles for the leading icon.
+   * @default undefined
+   * @type ViewStyle
+   */
+   leadingStyles?: ViewStyle;
+  /**
+   * Leading Icon for the TextInput.
+   * @default undefined
+   * @type React.FC
+   */
+   leadingIcon?: React.FC;
+  /**
    * Trailing Icon for the TextInput.
    * @default undefined
    * @type React.FC
@@ -171,6 +184,8 @@ export interface InputOutlineProps extends TextInputProps {
    * @type string
    */
   errorFontFamily?: string;
+  showPlaceholder?: boolean;
+  borderColor?: string
 }
 
 type InputOutline = InputOutlineMethods;
@@ -206,17 +221,20 @@ const InputOutlineComponent = forwardRef<InputOutline, InputOutlineProps>(
 
       // styling
       paddingHorizontal = 16,
-      paddingVertical = 12,
+      paddingVertical = 9,
       roundness = 5,
       style,
 
       // features
       placeholder = 'Placeholder',
+      leadingStyles = {},
+      leadingIcon,
       trailingIcon,
 
       // others
       value: _providedValue = '',
       onChangeText,
+      showPlaceholder = true,
       ...inputProps
     } = props;
     // value of input
@@ -242,21 +260,24 @@ const InputOutlineComponent = forwardRef<InputOutline, InputOutlineProps>(
       [error]
     );
 
-    const handleFocus = () => {
+    const handleFocus = (e: any) => {
       placeholderMap.value = withTiming(1); // focused
       if (!errorState()) colorMap.value = withTiming(1); // active
       focus();
+      props?.onFocus && props?.onFocus(e);
     };
 
-    const handleBlur = () => {
+    const handleBlur = (e: any) => {
       if (!value) placeholderMap.value = withTiming(0); // blur
       if (!errorState()) colorMap.value = withTiming(0); // inactive
       blur();
+      props?.onBlur && props?.onBlur(e);
+      handleChangeText(value.trim());
     };
 
     const handleChangeText = (text: string) => {
       onChangeText && onChangeText(text);
-      setValue(text);
+      // setValue(text);
     };
 
     const handlePlaceholderLayout = useCallback(
@@ -266,6 +287,11 @@ const InputOutlineComponent = forwardRef<InputOutline, InputOutlineProps>(
       },
       [placeholderSize]
     );
+
+    const renderLeadingIcon = useCallback(() => {
+      if (leadingIcon) return leadingIcon({});
+      return null;
+    }, [leadingIcon]);
 
     const renderTrailingIcon = useCallback(() => {
       if (trailingIcon) return trailingIcon({});
@@ -292,11 +318,11 @@ const InputOutlineComponent = forwardRef<InputOutline, InputOutlineProps>(
           translateY: interpolate(
             placeholderMap.value,
             [0, 1],
-            [0, -(paddingVertical + fontSize * 0.7)]
+            [0, -(paddingVertical + fontSize * 0.9)]
           ),
         },
         {
-          scale: interpolate(placeholderMap.value, [0, 1], [1, 0.7]),
+          scale: interpolate(placeholderMap.value, [0, 1], [1, 0.88]),
         },
         {
           translateX: interpolate(
@@ -320,7 +346,7 @@ const InputOutlineComponent = forwardRef<InputOutline, InputOutlineProps>(
       width: interpolate(
         placeholderMap.value,
         [0, 1],
-        [0, placeholderSize.value * 0.7 + 7],
+        [0, placeholderSize.value * 0.72 + 23],
         Extrapolate.CLAMP
       ),
     }));
@@ -341,6 +367,7 @@ const InputOutlineComponent = forwardRef<InputOutline, InputOutlineProps>(
       blur: handleBlur,
       isFocused: isFocused(),
       clear: clear,
+      error: errorState()
     }));
 
     const styles = StyleSheet.create({
@@ -350,12 +377,13 @@ const InputOutlineComponent = forwardRef<InputOutline, InputOutlineProps>(
         alignSelf: 'stretch',
         flexDirection: 'row',
         backgroundColor,
+        paddingVertical: 9,
+        paddingHorizontal: 5,
       },
       inputContainer: {
         flex: 1,
         paddingHorizontal,
-        paddingVertical:
-          Platform.OS !== 'android' ? paddingVertical : undefined,
+        paddingVertical,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -365,6 +393,7 @@ const InputOutlineComponent = forwardRef<InputOutline, InputOutlineProps>(
         fontSize,
         fontFamily,
         color: fontColor,
+        padding: 0,
       },
       placeholder: {
         position: 'absolute',
@@ -378,9 +407,9 @@ const InputOutlineComponent = forwardRef<InputOutline, InputOutlineProps>(
       placeholderSpacer: {
         position: 'absolute',
         top: -1,
-        left: paddingHorizontal - 3,
+        left: paddingHorizontal-3 ,
         backgroundColor,
-        height: 1,
+        height: 2,
       },
       errorText: {
         position: 'absolute',
@@ -390,8 +419,13 @@ const InputOutlineComponent = forwardRef<InputOutline, InputOutlineProps>(
         bottom: -errorFontSize - 7,
         left: paddingHorizontal,
       },
+      leadingIcon: {
+        left: paddingHorizontal,
+        alignSelf: 'center',
+        marginBottom: Platform.OS ==='ios' ? 2 : 0,
+      },
       trailingIcon: {
-        position: 'absolute',
+        // position: 'absolute',
         right: paddingHorizontal,
         alignSelf: 'center',
       },
@@ -414,23 +448,26 @@ const InputOutlineComponent = forwardRef<InputOutline, InputOutlineProps>(
     });
 
     const placeholderStyle = useMemo(() => {
-      return [styles.placeholder, animatedPlaceholderStyles];
-    }, [styles.placeholder, animatedPlaceholderStyles]);
+      return [styles.placeholder,{left:Number(leadingStyles?.width ?? 16 ) + 8  }, animatedPlaceholderStyles];
+    }, [styles.placeholder, animatedPlaceholderStyles, value]);
 
     return (
       <Animated.View style={[styles.container, animatedContainerStyle, style]}>
+         {leadingIcon && (
+          <View style={styles.leadingIcon}>{renderLeadingIcon()}</View>
+        )}
         <TouchableWithoutFeedback onPress={handleFocus}>
           <View style={styles.inputContainer}>
             <TextInput
               {...inputProps}
               ref={inputRef}
-              style={styles.input}
+              style={[styles.input, {left: leadingStyles ? 8 : 0}]}
               pointerEvents={isFocused() ? 'auto' : 'none'}
               onFocus={handleFocus}
               onBlur={handleBlur}
               onChangeText={handleChangeText}
-              maxLength={characterCount ? characterCount : undefined}
-              selectionColor={errorState() ? errorColor : activeColor}
+              maxLength={characterCount ? characterCount : props?.maxLength}
+              selectionColor={errorState() ? errorColor : props?.selectionColor ?? activeColor}
               placeholder=""
               value={value}
             />
@@ -439,8 +476,9 @@ const InputOutlineComponent = forwardRef<InputOutline, InputOutlineProps>(
         {trailingIcon && (
           <View style={styles.trailingIcon}>{renderTrailingIcon()}</View>
         )}
-        <Animated.View
-          style={[styles.placeholderSpacer, animatedPlaceholderSpacerStyles]}
+     {showPlaceholder && <>
+      <Animated.View
+          style={[styles.placeholderSpacer,{left:paddingHorizontal-3+(Number(leadingStyles?.width ?? 0 )/2)}, animatedPlaceholderSpacerStyles]}
         />
         <Animated.View
           style={placeholderStyle}
@@ -453,6 +491,7 @@ const InputOutlineComponent = forwardRef<InputOutline, InputOutlineProps>(
             {placeholder}
           </Animated.Text>
         </Animated.View>
+      </>}
         {characterCount && (
           <Text
             style={styles.counterText}
