@@ -221,7 +221,7 @@ const InputOutlineComponent = forwardRef<InputOutline, InputOutlineProps>(
 
       // styling
       paddingHorizontal = 16,
-      paddingVertical = 9,
+      paddingVertical = 5,
       roundness = 5,
       style,
 
@@ -421,8 +421,8 @@ const InputOutlineComponent = forwardRef<InputOutline, InputOutlineProps>(
       },
       leadingIcon: {
         left: paddingHorizontal,
-        alignSelf: 'center',
-        marginBottom: Platform.OS ==='ios' ? 2 : 0,
+        alignSelf: 'flex-end',
+        marginBottom: Platform.OS ==='ios' ? 5 : 2
       },
       trailingIcon: {
         // position: 'absolute',
